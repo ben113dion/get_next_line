@@ -12,12 +12,12 @@
 
 #include "get_next_line.h"
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
-	int	bytes;
+	int		bytes;
+	int		i;
 	char	chr;
 	char	*rtn;
-	int	i;
 
 	if (fd <= -1)
 		return (NULL);
