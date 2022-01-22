@@ -1,23 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bdion <bdion@student.42quebec.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/28 04:22:34 by bdion             #+#    #+#             */
-/*   Updated: 2021/12/28 14:06:02 by bdion            ###   ########.fr       */
+/*   Created: 2021/12/28 03:01:18 by bdion             #+#    #+#             */
+/*   Updated: 2021/12/28 14:05:30 by bdion            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
-# include <unistd.h>
-# include <stdlib.h>
-# include <stdio.h>
-# include <fcntl.h>
-# include <strings.h>
+#include "get_next_line.h"
 
-char *get_next_line(int fd);
+int	main2(char *fname);
 
-#endif
+int	main(void)
+{
+	main2("main.c");
+	return (1);
+}
+
+int	main2(char *fname)
+{
+	char	*out;
+	int	fd;
+
+	fd = open(fname, O_RDONLY);
+	out = get_next_line(fd);
+	while (out != NULL)
+	{
+        printf("%s", out);
+		out = get_next_line(fd);
+	}
+	printf("%s", out);
+	close(fd);
+	return (1);
+}	
