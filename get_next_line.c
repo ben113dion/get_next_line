@@ -27,8 +27,11 @@ char *get_next_line(int fd)
 	if (bytes == 0 || !rtn)
 		return (NULL);
 	rtn[++i] = chr;
-	while (i <= BUFFER_SIZE && chr != '\n' && (bytes = read(fd, &chr, 1)) != 0)
+	while (i <= BUFFER_SIZE && chr != '\n' && bytes != 0)
+	{
+		bytes = read(fd, &chr, 1);
 		rtn[++i] = chr;
+	}
 	if (bytes == 0)
 		return (NULL);
 	rtn[++i] = '\0';
