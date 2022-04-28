@@ -49,17 +49,9 @@ int maxed(int max)
   //     regarder si il contient un '/n', si oui, 'rtn' sera tout jusqua la nouvelle ligne,
   //     le reste dans 'last_extra'
 
-char *test_fonction(void){
-    char *rtn = malloc(70);
-    static char *last_extra;
-
-    if (check_last_extra(last_extra, rtn))
-        return (rtn);
-    
-}
 
 int main(void){
-    printf("|%s|\n", test_fonction());
+    printf("|%s|\n", strchr("\nallomoncoo\n\nasdf", '\n'));
     return (0);
 }
 
