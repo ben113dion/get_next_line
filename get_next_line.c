@@ -5,7 +5,7 @@
 #include <string.h>
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 20
+# define BUFFER_SIZE 21
 #endif
 
 void	ft_strset(char *b, char c)
@@ -68,13 +68,14 @@ int main(void)
     char  err = 0;
 
 
-    while (err <= 10)
+    while (err <= 44)
     {
         rtn = get_next_line(fd);
-		printf("->'%s'\n\n", rtn);
+		printf("%s", rtn);
 		if (rtn == NULL)
 			err = 44;
 		err++;
+		read(1, (void *) 1, 1);
     }
 	free(rtn);
     return (0);
@@ -90,23 +91,23 @@ int main(void)
 
 char    *get_next_line(int fd)
 {
-	char *buff = (char *) malloc(BUFFER_SIZE * sizeof(char) *2); //secu
+	char *buff = (char *) malloc(BUFFER_SIZE * 2); //secu
 	int rtn_size = 0; //secu
 	char *rtn = (char *) malloc(BUFFER_SIZE * sizeof(char) + 9999);
 	int readlen;
 	static char last_extra[BUFFER_SIZE * BUFFER_SIZE + 1];
 	static int	exit = 0;
 	int nnewline;
+	int lasti = 0;
   
  	// #1 (#4)regarder si il y a une string dans la variable static(last_extra)
 	
     if (strlen(last_extra) != 0)
-	{
-		printf(".%s.", last_extra);
+	{	
 		nnewline = where_the_line(last_extra);
 		if (strchr(last_extra, '\n') != NULL) // appeler si il y a au moin 1 \n 
 		{
-			printf("$1");
+			
 			// ici cest parcequ'il y a un ou plus d'un \n dans notre last_extra
 			// ont doit donc 
 			strcpy(rtn, substr(last_extra, 0, where_the_line(last_extra) + 1 ));
@@ -114,47 +115,46 @@ char    *get_next_line(int fd)
 			// ont doit supprimer les where_the_line(last_extra) premier char
 			strcpy(last_extra , substr(last_extra, where_the_line(last_extra) + 1, strlen(last_extra)) );
 			//printf("@%s@", last_extra);
-			free(buff);
+			printf("'%d'\n", readlen);
+			free(buff); 											
 			return (rtn);
 		}
 		else
 		{
-			printf("$2");
+	
 			strcpy(rtn, last_extra);
 			ft_strset(last_extra, '\0');
+			lasti = 1;
 		}
 	}
 
 	//#2 lire le fichier buffer par buffer
 	
 	/////////read section//////////
-	readlen = read(fd, buff, BUFFER_SIZE);
+	if (lasti == 0)
+	{	
+		readlen = read(fd, buff, BUFFER_SIZE);
+		printf("1\\r'%d'\n", readlen);
+		if (readlen == 32767)
+			printf("hit the readlen");
+	}
 	if (readlen <= 0 || exit == 1)
 		return (NULL);
-
 	while ((strchr(buff, '\n') == NULL) && (readlen != 0)) 
 	{
-		// copier tout du buff dans le rtn
-		printf("$3");
 		strcat(rtn, buff);
 		readlen = read(fd, buff, BUFFER_SIZE);
+		printf("2\\r'%d'\n", readlen);
 	}
-// ici ont peut dire quil nous reste juste a separer les buffers qui sont avec un '\n',
-// retourner tout jusquau '\n' 
+
+	
+
 	if ( (strchr(buff, '\n') != NULL) && (readlen != 0) )
 	{
-		printf("\n\nDEBUG(((\n where_the_line(buff) = %d\n buff = '%s'  \n)))\n\n", where_the_line(buff), buff);
-		// couper tout quesuia avant le \n et le strcat dans rtn
-		// mettre le reste dans last_extra et retourner apres free le buff
-		printf("$4");
 		strcat(rtn, substr(buff, 0, where_the_line(buff)+1));
 		strcpy(last_extra, strchr(buff, '\n')+1);
 	}
-
 	////////////////////////////////
-	
-
-	
 
 	free(buff);
 	return (rtn);
