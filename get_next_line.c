@@ -69,7 +69,8 @@ char    *get_next_line(int fd)
 	static int	exit = 0;
 	int nnewline;
 	int lasti = 0;
-	
+
+
     if (strlen(last_extra) != 0)
 	{	
 		nnewline = where_the_line(last_extra);
@@ -88,10 +89,11 @@ char    *get_next_line(int fd)
 			lasti = 1;
 		}
 	}
-	if (lasti == 0)
-		readlen = read(fd, buff, BUFFER_SIZE);
+	readlen = read(fd, buff, BUFFER_SIZE);
 	if (readlen <= 0 || exit == 1)
+	{
 		return (NULL);
+	}
 	while ((strchr(buff, '\n') == NULL) && (readlen != 0)) 
 	{
 		strcat(rtn, buff);
@@ -99,22 +101,26 @@ char    *get_next_line(int fd)
 	}
 	if ( (strchr(buff, '\n') != NULL) && (readlen != 0) )
 	{
+		
 		strcat(rtn, substr(buff, 0, where_the_line(buff)+1));
 		strcpy(last_extra, strchr(buff, '\n')+1);
+		free(buff);
+		return (rtn);
 	}
+
 	free(buff);
 	return (rtn);
 }
 
 int main(void)
 {
-    char  *file = "./a.out";
+    char  *file = "./read.txt";
     char  fd = open(file, O_RDONLY, 0);
     char  *rtn;
     int  err = 0;
 
 
-    while (err < 99999999)
+    while (err < 9999)
     {
         rtn = get_next_line(fd);
 		printf("%s", rtn);
