@@ -5,7 +5,7 @@
 #include <string.h>
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 21
+# define BUFFER_SIZE 10
 #endif
 
 void	ft_strset(char *b, char c)
@@ -76,6 +76,7 @@ char    *get_next_line(int fd)
 		nnewline = where_the_line(last_extra);
 		if (strchr(last_extra, '\n') != NULL)
 		{
+			
 			strcpy(rtn, substr(last_extra, 0, nnewline + 1 ));
 			strcpy(last_extra , substr(last_extra, nnewline + 1, strlen(last_extra)) );
 			free(buff); 											
@@ -83,14 +84,14 @@ char    *get_next_line(int fd)
 		}
 		else
 		{
-	
 			strcpy(rtn, last_extra);
 			ft_strset(last_extra, '\0');
 			lasti = 1;
 		}
 	}
+	
 	readlen = read(fd, buff, BUFFER_SIZE);
-	if (readlen <= 0 || exit == 1)
+	if ((readlen <= 0 || exit == 1) && lasti == 0)
 	{
 		return (NULL);
 	}
@@ -100,8 +101,7 @@ char    *get_next_line(int fd)
 		readlen = read(fd, buff, BUFFER_SIZE);
 	}
 	if ( (strchr(buff, '\n') != NULL) && (readlen != 0) )
-	{
-		
+	{	
 		strcat(rtn, substr(buff, 0, where_the_line(buff)+1));
 		strcpy(last_extra, strchr(buff, '\n')+1);
 		free(buff);
