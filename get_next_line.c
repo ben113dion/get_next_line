@@ -29,44 +29,12 @@ int     where_the_line(char *str)
     return (i);
 }
 
-
-char	*substr(char const *s, unsigned int start, size_t len)
-{
-	size_t	i;
-	size_t	j;
-	char	*str;
-
-	if (!s)
-		return (NULL);
-	if (start > strlen(s))
-		len = 0;
-	if (len >= (strlen(s) - start))
-		len = strlen(s) - start;
-	str = (char *)malloc(sizeof(*s) * (len + 1));
-	if (!str)
-		return (NULL);
-	i = -1;
-	j = 0;
-	while (s[++i])
-	{
-		if (i >= start && j < len)
-		{
-			str[j] = s[i];
-			j++;
-		}
-	}
-	str[j] = 0;
-	return (str);
-}
-
 char    *get_next_line(int fd)
 {
-	char *buff = (char *) malloc(BUFFER_SIZE * 2);
-	int rtn_size = 0;
-	char *rtn = (char *) malloc(BUFFER_SIZE * sizeof(char) + 9999);
+	char *buff = (char *) malloc(BUFFER_SIZE + 1);
+	char *rtn = (char *) malloc(BUFFER_SIZE + 1);
 	int readlen;
-	static char last_extra[BUFFER_SIZE * BUFFER_SIZE + 1];
-	static int	exit = 0;
+	static char last_extra[BUFFER_SIZE + 1];
 	int nnewline;
 	int lasti = 0;
 
@@ -76,9 +44,9 @@ char    *get_next_line(int fd)
 		nnewline = where_the_line(last_extra);
 		if (strchr(last_extra, '\n') != NULL)
 		{
-			
-			strcpy(rtn, substr(last_extra, 0, nnewline + 1 ));
-			strcpy(last_extra , substr(last_extra, nnewline + 1, strlen(last_extra)) );
+			//printf("!%s!", last_extra);
+			strncpy(rtn, last_extra, nnewline+1);
+			strcpy(last_extra, last_extra+nnewline+1);
 			free(buff); 											
 			return (rtn);
 		}
@@ -89,21 +57,23 @@ char    *get_next_line(int fd)
 			lasti = 1;
 		}
 	}
-	
+	ft_strset(buff, '\0');
 	readlen = read(fd, buff, BUFFER_SIZE);
-	if ((readlen <= 0 || exit == 1) && lasti == 0)
+	if (readlen <= 0 && lasti == 0)
 	{
 		return (NULL);
 	}
 	while ((strchr(buff, '\n') == NULL) && (readlen != 0)) 
 	{
 		strcat(rtn, buff);
+		ft_strset(buff, '\0');
 		readlen = read(fd, buff, BUFFER_SIZE);
 	}
 	if ( (strchr(buff, '\n') != NULL) && (readlen != 0) )
-	{	
-		strcat(rtn, substr(buff, 0, where_the_line(buff)+1));
-		strcpy(last_extra, strchr(buff, '\n')+1);
+	{
+		//printf("?");
+		strncat(rtn, buff, where_the_line(buff)+1);
+		strcpy(last_extra, buff+(where_the_line(buff)); ////////////////////////////////////LLLLLLLLLLLLLLEEEEEEEEEEEEEEEEEEEEEAAAAAAAAAAAAAAAAAAAAAAAAKKKKKKKKKKKKKKKKKKKKKSSSSSSSSSSSSSSSSs
 		free(buff);
 		return (rtn);
 	}
@@ -120,14 +90,29 @@ int main(void)
     int  err = 0;
 
 
-    while (err < 9999)
+	rtn = get_next_line(fd);
+	printf("|%s|", rtn);
+	free(rtn);
+	rtn = get_next_line(fd);
+	printf("|%s|", rtn);
+	free(rtn);
+	rtn = get_next_line(fd);
+	printf("|%s|", rtn);
+	free(rtn);
+	
+
+    /*while (err < 9999)
     {
         rtn = get_next_line(fd);
-		printf("%s", rtn);
 		if (rtn == NULL)
 			err = 99999999;
+		else
+		{
+			printf("|%s|", rtn);
+			free(rtn);
+		}
 		err++;
-    }
-	free(rtn);
+		
+    }/*/
     return (0);
 }
