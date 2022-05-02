@@ -1,55 +1,39 @@
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bdion <marvin@42quebec.com>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/05/02 13:37:59 by bdion             #+#    #+#             */
+/*   Updated: 2022/05/02 13:38:04 by bdion            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#ifndef BUFFER_SIZE
-# define BUFFER_SIZE 1000000
-#endif
+#include "get_next_line.h"
 
-void	ft_strset(char *b, char c)
+char	*get_next_line(int fd)
 {
-	size_t	i;
+	char		*buff;
+	char		*rtn;
+	int			readlen;
+	static char	last_extra[BUFFER_SIZE + 1];
+	int			nnewline;
+	int			lasti;
 
-	i = -1;
-	while (b[++i])
-		b[i] = c;
-}
-
-int     where_the_line(char *str)
-{
-    int i = 0;
-    while (str[i])
-    {
-		if (str[i] == '\n')
-			return(i);
-		i++;
-	}
-    return (i);
-}
-
-char    *get_next_line(int fd)
-{
-	char *buff = (char *) malloc(BUFFER_SIZE + 1);
-	char *rtn = (char *) malloc(BUFFER_SIZE + 10000);
-	int readlen;
-	static char last_extra[BUFFER_SIZE + 1];
-	int nnewline;
-	int lasti = 0;
-
-
-    if (strlen(last_extra) != 0)
-	{	
-		
+	rtn = (char *) malloc(BUFFER_SIZE + 10000);
+	buff = (char *) malloc(BUFFER_SIZE + 1);
+	lasti = 0;
+	if (strlen(last_extra) != 0)
+	{
 		if (strchr(last_extra, '\n') != NULL)
 		{
 			nnewline = where_the_line(last_extra);
-			strncpy(rtn, last_extra, nnewline+1);
-			strcpy(buff, last_extra+nnewline+1);
+			strncpy(rtn, last_extra, nnewline + 1);
+			strcpy(buff, last_extra + nnewline + 1);
 			ft_strset(last_extra, '\0');
 			strcpy(last_extra, buff);
-			free(buff); 											
+			free(buff);
 			return (rtn);
 		}
 		else
@@ -67,45 +51,19 @@ char    *get_next_line(int fd)
 		free(rtn);
 		return (NULL);
 	}
-	while ((strchr(buff, '\n') == NULL) && (readlen != 0)) 
+	while ((strchr(buff, '\n') == NULL) && (readlen != 0))
 	{
 		strcat(rtn, buff);
 		ft_strset(buff, '\0');
 		readlen = read(fd, buff, BUFFER_SIZE);
 	}
-	if ( (strchr(buff, '\n') != NULL) && (readlen != 0) )
+	if ((strchr(buff, '\n') != NULL) && (readlen != 0))
 	{
-		strncat(rtn, buff, where_the_line(buff)+1);
-		strcpy(last_extra, buff+(where_the_line(buff)+1));
+		strncat(rtn, buff, where_the_line(buff) + 1);
+		strcpy(last_extra, buff + (where_the_line(buff) + 1));
 		free(buff);
 		return (rtn);
 	}
-
 	free(buff);
 	return (rtn);
-}
-
-int main(void)
-{
-    char  *file = "./read.txt";
-    char  fd = open(file, O_RDONLY, 0);
-    char  *rtn;
-    int  err = 0;
-
-
-
-    while (err < 9999)
-    {
-        rtn = get_next_line(fd);
-		if (rtn == NULL)
-			err = 99999999;
-		else
-		{
-			printf("|%s|", rtn);
-			free(rtn);
-		}
-		err++;
-		
-    }
-    return (0);
 }
