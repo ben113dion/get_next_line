@@ -5,7 +5,7 @@
 #include <string.h>
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 10
+# define BUFFER_SIZE 1000000
 #endif
 
 void	ft_strset(char *b, char c)
@@ -32,7 +32,7 @@ int     where_the_line(char *str)
 char    *get_next_line(int fd)
 {
 	char *buff = (char *) malloc(BUFFER_SIZE + 1);
-	char *rtn = (char *) malloc(BUFFER_SIZE + 1);
+	char *rtn = (char *) malloc(BUFFER_SIZE + 10000);
 	int readlen;
 	static char last_extra[BUFFER_SIZE + 1];
 	int nnewline;
@@ -41,12 +41,14 @@ char    *get_next_line(int fd)
 
     if (strlen(last_extra) != 0)
 	{	
-		nnewline = where_the_line(last_extra);
+		
 		if (strchr(last_extra, '\n') != NULL)
 		{
-			//printf("!%s!", last_extra);
+			nnewline = where_the_line(last_extra);
 			strncpy(rtn, last_extra, nnewline+1);
-			strcpy(last_extra, last_extra+nnewline+1);
+			strcpy(buff, last_extra+nnewline+1);
+			ft_strset(last_extra, '\0');
+			strcpy(last_extra, buff);
 			free(buff); 											
 			return (rtn);
 		}
@@ -61,6 +63,8 @@ char    *get_next_line(int fd)
 	readlen = read(fd, buff, BUFFER_SIZE);
 	if (readlen <= 0 && lasti == 0)
 	{
+		free(buff);
+		free(rtn);
 		return (NULL);
 	}
 	while ((strchr(buff, '\n') == NULL) && (readlen != 0)) 
@@ -71,9 +75,8 @@ char    *get_next_line(int fd)
 	}
 	if ( (strchr(buff, '\n') != NULL) && (readlen != 0) )
 	{
-		//printf("?");
 		strncat(rtn, buff, where_the_line(buff)+1);
-		strcpy(last_extra, buff+(where_the_line(buff)); ////////////////////////////////////LLLLLLLLLLLLLLEEEEEEEEEEEEEEEEEEEEEAAAAAAAAAAAAAAAAAAAAAAAAKKKKKKKKKKKKKKKKKKKKKSSSSSSSSSSSSSSSSs
+		strcpy(last_extra, buff+(where_the_line(buff)+1));
 		free(buff);
 		return (rtn);
 	}
@@ -90,18 +93,8 @@ int main(void)
     int  err = 0;
 
 
-	rtn = get_next_line(fd);
-	printf("|%s|", rtn);
-	free(rtn);
-	rtn = get_next_line(fd);
-	printf("|%s|", rtn);
-	free(rtn);
-	rtn = get_next_line(fd);
-	printf("|%s|", rtn);
-	free(rtn);
-	
 
-    /*while (err < 9999)
+    while (err < 9999)
     {
         rtn = get_next_line(fd);
 		if (rtn == NULL)
@@ -113,6 +106,6 @@ int main(void)
 		}
 		err++;
 		
-    }/*/
+    }
     return (0);
 }
